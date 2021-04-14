@@ -10,7 +10,10 @@ app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
-mongoose.connect("mongodb://localhost:27017/todolistDB", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb+srv://admin-althaf:test123@althaffz.qoebe.mongodb.net/todolistDB?retryWrites=true&w=majority",
+{useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false});
 
 
 const itemsSchema = {
@@ -76,12 +79,10 @@ app.get("/:customListName", function(req, res){
         });
 
         await list.save();
-        console.log("New route name " + customListName +" Created!");
         res.redirect('/'+ customListName);
 
       }else {
         res.render('list', {listTitle: results.name, newListItems: results.items});
-        //console.log(results);
       }
     }
   });
@@ -122,7 +123,6 @@ app.post( "/delete", function(req, res){
   } else {
     List.updateOne({name: listName}, {$pull: {items: {"_id": checkedItemID}}}, function(err){
       if (!err){
-        console.log("updated");
         res.redirect('/' + listName);
       }
     });
@@ -130,6 +130,6 @@ app.post( "/delete", function(req, res){
 
 });
 
-app.listen(3000, function() {
+app.listen(process.env.PORT || 3000, function() {
   console.log("Server started on port 3000");
 });
